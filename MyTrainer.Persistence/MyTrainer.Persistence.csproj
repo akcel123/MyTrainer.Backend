@@ -10,4 +10,7 @@
     <ProjectReference Include="..\MyTrainer.Application\MyTrainer.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="7.0.4" />
+  </ItemGroup>
 </Project>
