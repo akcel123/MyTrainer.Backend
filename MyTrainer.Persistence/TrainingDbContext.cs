@@ -18,11 +18,8 @@ public class TrainingDbContext: ITrainingDbContext
 
     public TrainingDbContext(DbConnectionParameters connectionParameters)
     {
-        _connectionString = $"Server={connectionParameters.ServerAddress};" +
-                            $"Port={connectionParameters.Port};" +
-                            $"Database={connectionParameters.DatabaseName};" +
-                            $"User Id={connectionParameters.UserId};" +
-                            $"Password={connectionParameters.Password};";
+        //FIXME: исправить на получение строки из конфигурационного файла
+        _connectionString = connectionParameters.ToString();
 
         _connection = new NpgsqlConnection(_connectionString);
         
@@ -46,6 +43,7 @@ public class TrainingDbContext: ITrainingDbContext
         get
         {
             IEnumerable <Training> trainings = new List<Training>();
+            //used using instead
             try
             {
                 _connection.Open();
@@ -100,7 +98,7 @@ public class TrainingDbContext: ITrainingDbContext
             command.Parameters.AddWithValue("training_name", training.Name);
             command.Parameters.AddWithValue("training_description", training.Description);
             command.Parameters.AddWithValue("creation_date", training.CreationDate); //FIXME: параметр даты
-            command.Parameters.AddWithValue("edit_date", null); //FIXME: как правильно???
+            command.Parameters.AddWithValue("edit_date", DBNull.Value); //FIXME: как правильно???
             command.Parameters.AddWithValue("is_completed", false);
 
             command.ExecuteNonQuery();
@@ -145,6 +143,7 @@ public class TrainingDbContext: ITrainingDbContext
     public Training? Get(Guid guid)
     {
         Training? training = null;
+ 
         try
         {
             _connection.Open();
