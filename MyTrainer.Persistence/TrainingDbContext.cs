@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Xml.Linq;
 using MyTrainer.Application.Interfaces;
 using MyTrainer.Application.Structs;
@@ -9,108 +10,86 @@ using Npgsql;
 namespace MyTrainer.Persistence;
 
 
-public class TrainingDbContext: ITrainingDbContext
+public class TrainingDbContext
 {
     readonly string _connectionString;
-    readonly NpgsqlConnection _connection;
     private static string _tableName = "trainings";
-    
 
-    public TrainingDbContext(DbConnectionParameters connectionParameters)
+
+    public TrainingDbContext(string connectionParameters)
     {
         //FIXME: исправить на получение строки из конфигурационного файла
-        _connectionString = connectionParameters.ToString();
+        _connectionString = connectionParameters;
 
-        _connection = new NpgsqlConnection(_connectionString);
-        
     }
 
-/*
- * 
- * training_id int NOT NULL,
-   user_id int NOT NULL,
-   trainer_id int NOT NULL,
-   training_name varchar(64),
-   training_description text NOT NULL,
-   creation_date date NOT NULL,
-   edit_date date,
-   is_completed bool NOT NULL
- */
-
-    //TODO: Это свойство можем поменять, чтобы при обращении не получать каждый раз большую выборку, а сделать получение в отдельном методе
-    public IEnumerable<Training> Trainings
+    public IEnumerable<Training> GetAllTrainings()
     {
-        get
+        List<Training> trainings = new();
+
+        try
         {
-            IEnumerable <Training> trainings = new List<Training>();
-            //used using instead
-            try
-            {
-                _connection.Open();
-                string sqlQuery = $"SELECT * FROM {_tableName} ";
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
+            string sqlQuery = $"SELECT * FROM {_tableName} ";
 
-                var command = new NpgsqlCommand(sqlQuery, _connection);
-                NpgsqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    var training = new Training()
-                    {
-                        Id = reader.GetGuid(0),
-                        UserId = reader.GetGuid(1),
-                        TrainerId = reader.GetGuid(2),
-                        Name = reader.GetString(3),
-                        Description = reader.GetString(4),
-                        CreationDate = new DateOnly(reader.GetDateTime(5)), //FIXME: Эта строка неправильная, подумать как реализовать
-                        EditDate = new DateOnly(reader.GetDateTime(6)),       //FIXME: то же самое
-                        IsCompleted = reader.GetBoolean(7)
-                    };
-
-                    trainings.Append(training);
-                }
-            }
-            catch (Exception exception)
+            using var command = new NpgsqlCommand(sqlQuery, connection);
+            NpgsqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
             {
-                Console.WriteLine($"Возникла ошибка при получении значения: {exception}");
-            }
-            finally
-            {
-                _connection.Close();
-            }
+                var training = new Training();
+                training.Id = reader.GetGuid(0);
+                training.UserId = reader.GetGuid(1);
+                training.TrainerId = reader.GetGuid(2);
+                training.Name = reader.IsDBNull(3) ? null : reader.GetString(3);
+                training.Description = reader.GetString(4);
 
-            return trainings;
+                var creationDate = reader.GetDateTime(5);
+                DateTime? editDate = reader.IsDBNull(6) ? null : reader.GetDateTime(6);
+
+                training.IsCompleted = reader.GetBoolean(7);
+                training.CreationDate = new DateOnly(creationDate.Year, creationDate.Month, creationDate.Day);
+                training.EditDate = editDate == null ? null : new DateOnly(editDate.Value.Year, editDate.Value.Month, editDate.Value.Day);
+                trainings.Add(training);
+
+            }
         }
+        catch (NpgsqlException exception)
+        {
+            Console.WriteLine($"Возникла ошибка при получении значения: {exception.Message}");
+        }
+
+        return trainings;
     }
 
     public void Create(Training training)
     {
         try
         {
-            _connection.Open();
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
             string sqlQuery = $"INSERT INTO {_tableName} " +
-                              $"(training_id, user_id, trainer_id, training_name, training_description, creation_date, edit_date, is_completed) " +
+                              $"(id, user_id, trainer_id, name, description, creation_date, edit_date, is_completed) " +
                               $"VALUES " +
-                              $"(@training_id, @user_id, @trainer_id, @training_name, @training_description, @creation_date, @edit_date, @is_completed)";
+                              $"(@id, @user_id, @trainer_id, @training_name, @training_description, @creation_date, @edit_date, @is_completed)";
 
-            var command = new NpgsqlCommand(sqlQuery, _connection);
-            command.Parameters.AddWithValue("training_id", training.Id);
+            using var command = new NpgsqlCommand(sqlQuery, connection);
+
+            command.Parameters.AddWithValue("id", training.Id);
             command.Parameters.AddWithValue("user_id", training.UserId);
             command.Parameters.AddWithValue("trainer_id", training.TrainerId);
-            command.Parameters.AddWithValue("training_name", training.Name);
+            command.Parameters.AddWithValue("training_name", training.Name != null ? training.Name : DBNull.Value);
             command.Parameters.AddWithValue("training_description", training.Description);
-            command.Parameters.AddWithValue("creation_date", training.CreationDate); //FIXME: параметр даты
-            command.Parameters.AddWithValue("edit_date", DBNull.Value); //FIXME: как правильно???
+            command.Parameters.AddWithValue("creation_date", training.CreationDate);
+            command.Parameters.AddWithValue("edit_date", DBNull.Value);
             command.Parameters.AddWithValue("is_completed", false);
 
             command.ExecuteNonQuery();
 
         }
-        catch (Exception exception)
+        catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка {exception}");
-        }
-        finally
-        {
-            _connection.Close();
+            Console.WriteLine($"Возникла ошибка {exception.Message}");
         }
     }
 
@@ -119,61 +98,62 @@ public class TrainingDbContext: ITrainingDbContext
     {
         try
         {
-            _connection.Open();
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
             string sqlQuery = $"DELETE FROM {_tableName} " +
                               $"WHERE id = @id";
-            var command = new NpgsqlCommand(sqlQuery, _connection);
+            using var command = new NpgsqlCommand(sqlQuery, connection);
             command.Parameters.AddWithValue("id", guid);
             int rowsAffected = command.ExecuteNonQuery();
 
             //TODO: реализовать проверку успешности удаления, возможно нужно отредактировать функцию Delete
+            if (rowsAffected == 0)
+            {
+                //FIXME: исправить на другой класс Exception (наверное собственный)
+                throw new Exception();
+            }
+        }
+        catch (NpgsqlException exception)
+        {
+            Console.WriteLine($"Возникла ошибка при получении значения: {exception.Message}");
+        }
 
-        }
-        catch (Exception exception)
-        {
-            Console.WriteLine($"Возникла ошибка при получении значения: {exception}");
-        }
-        finally
-        {
-            _connection.Close();
-        }
     }
 
 
     public Training? Get(Guid guid)
     {
         Training? training = null;
- 
+
         try
         {
-            _connection.Open();
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
             string sqlQuery = $"SELECT * FROM {_tableName} " +
                               $"WHERE id = @id";
-            var command = new NpgsqlCommand(sqlQuery, _connection);
+            using var command = new NpgsqlCommand(sqlQuery, connection);
             command.Parameters.AddWithValue("id", guid);
             NpgsqlDataReader reader = command.ExecuteReader();
             if (reader.Read())
             {
-                training = new Training()
-                {
-                    Id = reader.GetGuid(0),
-                    UserId = reader.GetGuid(1),
-                    TrainerId = reader.GetGuid(2),
-                    Name = reader.GetString(3),
-                    Description = reader.GetString(4),
-                    CreationDate = new DateOnly( reader.GetDateTime(5)), //FIXME: Эта строка неправильная, подумать как реализовать
-                    EditDate = new DateOnly( reader.GetDateTime(6)),       //FIXME: то же самое
-                    IsCompleted = reader.GetBoolean(7)
-                };
+                training = new Training();
+                training.Id = reader.GetGuid(0);
+                training.UserId = reader.GetGuid(1);
+                training.TrainerId = reader.GetGuid(2);
+                training.Name = reader.IsDBNull(3) ? null : reader.GetString(3);
+                training.Description = reader.GetString(4);
+
+                var creationDate = reader.GetDateTime(5);
+                DateTime? editDate = reader.IsDBNull(6) ? null : reader.GetDateTime(6);
+
+                training.IsCompleted = reader.GetBoolean(7);
+                training.CreationDate = new DateOnly(creationDate.Year, creationDate.Month, creationDate.Day);
+                training.EditDate = editDate == null ? null : new DateOnly(editDate.Value.Year, editDate.Value.Month, editDate.Value.Day);
             }
         }
-        catch (Exception exception)
+        catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка при получении значения: {exception}");
-        }
-        finally
-        {
-            _connection.Close();
+            Console.WriteLine($"Возникла ошибка при получении значения: {exception.Message}");
         }
 
         return training;
@@ -191,41 +171,41 @@ public class TrainingDbContext: ITrainingDbContext
     {
         try
         {
-            _connection.Open();
+            using var connection = new NpgsqlConnection(_connectionString);
+            connection.Open();
             string sqlQuery = $"UPDATE {_tableName} " +
-                              $"(user_id, trainer_id, training_name, training_description, creation_date, edit_date, is_completed) " +
                               $"SET " +
-                              $"(@user_id, @trainer_id, @training_name, @training_description, @creation_date, @edit_date, @is_completed) " +
-                              $"WHERE training_id = @training_id";
+                              $"user_id = @user_id, trainer_id = @trainer_id, name = @training_name, " +
+                              $"description = @training_description, creation_date = @creation_date, " +
+                              $"edit_date = @edit_date, is_completed = @is_completed " +
+                              $"WHERE id = @id";
 
-            var command = new NpgsqlCommand(sqlQuery, _connection);
+            using var command = new NpgsqlCommand(sqlQuery, connection);
 
             command.Parameters.AddWithValue("user_id", training.UserId);
             command.Parameters.AddWithValue("trainer_id", training.TrainerId);
-            command.Parameters.AddWithValue("training_name", training.Name);
+            command.Parameters.AddWithValue("training_name", training.Name != null ? training.Name : DBNull.Value);
             command.Parameters.AddWithValue("training_description", training.Description);
-            command.Parameters.AddWithValue("creation_date", training.CreationDate); //FIXME: параметр даты
-            command.Parameters.AddWithValue("edit_date", training.EditDate); //FIXME: как правильно???
+            command.Parameters.AddWithValue("creation_date", training.CreationDate);
+            command.Parameters.AddWithValue("edit_date", training.EditDate != null ? training.EditDate : DBNull.Value);
             command.Parameters.AddWithValue("is_completed", training.IsCompleted);
 
-            command.Parameters.AddWithValue("training_id", training.Id);
+            command.Parameters.AddWithValue("id", training.Id);
 
             //TODO: тут можно реализовать проверку на успешность операции
             int rowsAffected = command.ExecuteNonQuery();
+            if (rowsAffected == 0)
+            {
+                //FIXME: исправить на другой класс Exception (наверное собственный)
+                throw new Exception();
+            }
 
         }
-        catch (Exception exception)
+        catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка при обновлении события {exception}");
+            Console.WriteLine($"Возникла ошибка при обновлении события {exception.Message}");
         }
-        finally
-        {
-            _connection.Close();
-        }
+
     }
 
-    
-
-
 }
-

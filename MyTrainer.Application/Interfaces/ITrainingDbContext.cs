@@ -7,7 +7,7 @@ public interface ITrainingDbContext
 {
     void Create(Training training);
     Training? Get(Guid guid);
-    IEnumerable<Training> Trainings { get; }
+    IEnumerable<Training> GetAllTrainings();
     void Update(Training training);
     void Delete(Guid guid);
     void SaveContext();
