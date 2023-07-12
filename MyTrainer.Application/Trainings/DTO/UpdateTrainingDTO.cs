@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTrainer.Application.Trainings.Commands;
+namespace MyTrainer.Application.Trainings.DTO;
 
-public class UpdateTrainingCommand
+public class UpdateTrainingDTO
 {
     public Guid UserId { get; set; }        
     public Guid TrainerId { get; set; }     

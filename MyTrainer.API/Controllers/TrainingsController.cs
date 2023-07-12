@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyTrainer.Application;
 using MyTrainer.Application.Extensions;
-using MyTrainer.Application.Trainings.Commands;
+using MyTrainer.Application.Trainings.DTO;
 using MyTrainer.Domain;
 
 namespace MyTrainer.API.Controllers;
@@ -18,13 +18,13 @@ public class TrainingsController : Controller
 
     [HttpGet]
     [Route("get_trainings")]
-    public IEnumerable<GetTrainingCommand> GetTrainings()
+    public IEnumerable<GetTrainingDTO> GetTrainings()
     {
         var trainings = _repository.GetAllTrainings().ToArray();
-        var mappedTrainings = new List<GetTrainingCommand>();
+        var mappedTrainings = new List<GetTrainingDTO>();
         foreach (var training in trainings)
         {
-            mappedTrainings.Add(new GetTrainingCommand()
+            mappedTrainings.Add(new GetTrainingDTO()
             {
                 Id = training.Id,
                 UserId = training.UserId,
@@ -43,7 +43,7 @@ public class TrainingsController : Controller
 
     [HttpGet]
     [Route("get_training/{guid?}")]
-    public GetTrainingCommand? GetTraining(Guid? guid)
+    public GetTrainingDTO? GetTraining(Guid? guid)
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
         if (guid == null)
@@ -57,7 +57,7 @@ public class TrainingsController : Controller
         if (training == null)
             return null;
 
-        var mappedTraining = new GetTrainingCommand()
+        var mappedTraining = new GetTrainingDTO()
         {
             Id = training.Id,
             UserId = training.UserId,
@@ -75,7 +75,7 @@ public class TrainingsController : Controller
 
     [HttpPost]
     [Route("create_training")]
-    public GetTrainingCommand CreateTraining(CreateTrainingCommand command)
+    public GetTrainingDTO CreateTraining(CreateTrainingDTO command)
     {
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
         var training = new Training()
@@ -94,7 +94,7 @@ public class TrainingsController : Controller
         _repository.Create(training);
         _repository.Save();
 
-        var returnedTraining = new GetTrainingCommand()
+        var returnedTraining = new GetTrainingDTO()
         {
             Id = training.Id,
             UserId = training.UserId,
@@ -127,7 +127,7 @@ public class TrainingsController : Controller
 
     [HttpPut]
     [Route("update_training/{guid?}")]
-    public GetTrainingCommand? UpdateTraining(UpdateTrainingCommand command, Guid? guid)
+    public GetTrainingDTO? UpdateTraining(UpdateTrainingDTO command, Guid? guid)
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
         if (guid == null)
@@ -153,7 +153,7 @@ public class TrainingsController : Controller
         _repository.Update(training);
         _repository.Save();
 
-        var returnedTraining = new GetTrainingCommand()
+        var returnedTraining = new GetTrainingDTO()
         {
             Id = training.Id,
             UserId = training.UserId,

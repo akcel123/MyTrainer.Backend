@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTrainer.Application.Trainings.Commands;
+namespace MyTrainer.Application.Trainings.DTO;
 
-public class CreateTrainingCommand
+public class CreateTrainingDTO
 {
     public Guid TrainerId { get; set; }     // Вот это свойство под вопросом (ID тренера, который написал тренировку)
     public Guid UserId { get; set; }            // ID самой тренировки

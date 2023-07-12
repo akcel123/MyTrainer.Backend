@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyTrainer.Application.Trainings.Commands;
+namespace MyTrainer.Application.Trainings.DTO;
 
-public class GetTrainingCommand
+public class GetTrainingDTO
 {
     public Guid Id { get; set; }            // ID самой тренировки
     public Guid UserId { get; set; }        // ID пользователя, которому предназначена тренировка
