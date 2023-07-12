@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyTrainer.API.Models;
 using MyTrainer.Application;
 using MyTrainer.Application.Extensions;
-using MyTrainer.Application.Trainings.DTO;
 using MyTrainer.Domain;
 
 namespace MyTrainer.API.Controllers;
@@ -11,6 +11,7 @@ namespace MyTrainer.API.Controllers;
 public class TrainingsController : Controller
 {
     readonly ITrainingRepository _repository;
+    private readonly ILogger<TrainingsController> _logger;
 
     public TrainingsController(ITrainingRepository repository)
         => _repository = repository;
@@ -24,6 +25,7 @@ public class TrainingsController : Controller
         var mappedTrainings = new List<GetTrainingDTO>();
         foreach (var training in trainings)
         {
+            
             mappedTrainings.Add(new GetTrainingDTO()
             {
                 Id = training.Id,
@@ -42,7 +44,7 @@ public class TrainingsController : Controller
 
 
     [HttpGet]
-    [Route("get_training/{guid?}")]
+    [Route("get_training/{guid:guid?}")]
     public GetTrainingDTO? GetTraining(Guid? guid)
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
@@ -111,7 +113,7 @@ public class TrainingsController : Controller
 
 
     [HttpDelete]
-    [Route("delete_training/{guid?}")]
+    [Route("delete_training/{guid:guid?}")]
     public void DeleteTraining(Guid? guid) 
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
@@ -126,7 +128,7 @@ public class TrainingsController : Controller
 
 
     [HttpPut]
-    [Route("update_training/{guid?}")]
+    [Route("update_training/{guid:guid?}")]
     public GetTrainingDTO? UpdateTraining(UpdateTrainingDTO command, Guid? guid)
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
