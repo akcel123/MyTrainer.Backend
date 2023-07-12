@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Xml.Linq;
+using Microsoft.Extensions.Configuration;
 using MyTrainer.Application.Interfaces;
 using MyTrainer.Application.Structs;
 using MyTrainer.Domain;
@@ -10,16 +11,14 @@ using Npgsql;
 namespace MyTrainer.Persistence;
 
 
-public class TrainingDbContext
+public class TrainingDbContext: ITrainingDbContext
 {
     readonly string _connectionString;
-    private static string _tableName = "trainings";
+    private static readonly string _tableName = "trainings";
 
-
-    public TrainingDbContext(string connectionParameters)
+    public TrainingDbContext(string connectionString)
     {
-        //FIXME: исправить на получение строки из конфигурационного файла
-        _connectionString = connectionParameters;
+        _connectionString = connectionString;
 
     }
 
@@ -83,7 +82,7 @@ public class TrainingDbContext
             command.Parameters.AddWithValue("creation_date", training.CreationDate);
             command.Parameters.AddWithValue("edit_date", DBNull.Value);
             command.Parameters.AddWithValue("is_completed", false);
-
+            
             command.ExecuteNonQuery();
 
         }
