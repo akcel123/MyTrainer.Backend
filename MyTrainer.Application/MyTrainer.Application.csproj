@@ -15,7 +15,6 @@
     <None Remove="Structs\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Interfaces\" />
     <Folder Include="Structs\" />
   </ItemGroup>
 </Project>

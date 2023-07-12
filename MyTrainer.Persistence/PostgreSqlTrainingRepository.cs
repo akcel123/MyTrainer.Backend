@@ -5,10 +5,10 @@ using System;
 
 namespace MyTrainer.Persistence;
 
-public class PostgreSqlRepository: IRepository
+public class PostgreSqlTrainingRepository: ITrainingRepository
 {
     readonly ITrainingDbContext _dbContext;
-		public PostgreSqlRepository(ITrainingDbContext dbContext)
+		public PostgreSqlTrainingRepository(ITrainingDbContext dbContext)
 		    => _dbContext = dbContext;
 
     public void Create(Training training)
