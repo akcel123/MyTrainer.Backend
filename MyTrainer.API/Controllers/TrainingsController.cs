@@ -12,32 +12,22 @@ public class TrainingsController : Controller
 {
     readonly ITrainingRepository _repository;
     private readonly ILogger<TrainingsController> _logger;
-
-    public TrainingsController(ITrainingRepository repository)
-        => _repository = repository;
-
+    
+    public TrainingsController(ITrainingRepository repository, ILogger<TrainingsController> logger)
+        => (_repository, _logger) = (repository, logger);
 
     [HttpGet]
     [Route("get_trainings")]
-    public IEnumerable<GetTrainingDTO> GetTrainings()
+    public IEnumerable<GetTrainingDto> GetTrainings()
     {
+
         var trainings = _repository.GetAllTrainings().ToArray();
-        var mappedTrainings = new List<GetTrainingDTO>();
+        var mappedTrainings = new List<GetTrainingDto>();
+
         foreach (var training in trainings)
-        {
-            
-            mappedTrainings.Add(new GetTrainingDTO()
-            {
-                Id = training.Id,
-                UserId = training.UserId,
-                TrainerId = training.TrainerId,
-                Name = training.Name,
-                Description = training.Description,
-                CreationDate = training.CreationDate.ToDateTime(new TimeOnly(0)),
-                EditDate = training.EditDate?.ToDateTime(new TimeOnly(0)),
-                IsCompleted = training.IsCompleted
-            });
-        }
+            mappedTrainings.Add(GetTrainingDto.FromTraining(training));
+
+        _logger.LogInformation("Все тренировки успешно получены в ответ на запрос");
 
         return mappedTrainings;
     }
@@ -45,11 +35,12 @@ public class TrainingsController : Controller
 
     [HttpGet]
     [Route("get_training/{guid:guid?}")]
-    public GetTrainingDTO? GetTraining(Guid? guid)
+    public GetTrainingDto? GetTraining(Guid? guid)
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
         if (guid == null)
         {
+            _logger.LogWarning("При попытке получения тренировки, не передано значение id");
             Response.StatusCode = 404;
             return null;
         }
@@ -57,19 +48,12 @@ public class TrainingsController : Controller
         var training = _repository.Get(guid.Value);
 
         if (training == null)
-            return null;
-
-        var mappedTraining = new GetTrainingDTO()
         {
-            Id = training.Id,
-            UserId = training.UserId,
-            TrainerId = training.TrainerId,
-            Name = training.Name,
-            Description = training.Description,
-            CreationDate = training.CreationDate.ToDateTime(new TimeOnly(0)),
-            EditDate = training.EditDate?.ToDateTime(new TimeOnly(0)),
-            IsCompleted = training.IsCompleted
-        };
+            _logger.LogError("Не удалось получить тренировку из БД");
+            return null;
+        }
+
+        var mappedTraining = GetTrainingDto.FromTraining(training);
 
         return mappedTraining;
     }
@@ -77,36 +61,18 @@ public class TrainingsController : Controller
 
     [HttpPost]
     [Route("create_training")]
-    public GetTrainingDTO CreateTraining(CreateTrainingDTO command)
+    public GetTrainingDto CreateTraining(CreateTrainingDto dto)
     {
+        _logger.LogInformation("Создание тренировки. DTO: " + dto);
+
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
-        var training = new Training()
-        {
-            Id = Guid.NewGuid(),
-            UserId = command.UserId,
-            TrainerId = command.TrainerId,
-            Name = command.Name,
-            Description = command.Description,
-            CreationDate = command.CreationDate.ToDateOnly(),
-            EditDate = null,
-            IsCompleted = false
-        };
+        var training = dto.ToTrainig();
 
         //TODO: подумать о реализации проверки успешности создания тренировки
         _repository.Create(training);
         _repository.Save();
 
-        var returnedTraining = new GetTrainingDTO()
-        {
-            Id = training.Id,
-            UserId = training.UserId,
-            TrainerId = training.TrainerId,
-            Name = training.Name,
-            Description = training.Description,
-            CreationDate = training.CreationDate.ToDateTime(new TimeOnly(0)),
-            EditDate = training.EditDate?.ToDateTime(new TimeOnly(0)),
-            IsCompleted = training.IsCompleted
-        };
+        var returnedTraining = GetTrainingDto.FromTraining(training);
 
         return returnedTraining;
     }
@@ -119,6 +85,7 @@ public class TrainingsController : Controller
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
         if (guid == null)
         {
+            _logger.LogWarning("При попытке удаления тренировки, не передано значение id");
             Response.StatusCode = 404;
             return;
         }
@@ -129,44 +96,27 @@ public class TrainingsController : Controller
 
     [HttpPut]
     [Route("update_training/{guid:guid?}")]
-    public GetTrainingDTO? UpdateTraining(UpdateTrainingDTO command, Guid? guid)
+    public GetTrainingDto? UpdateTraining(UpdateTrainingDTO dto, Guid? guid)
     {
         //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
+        //В данный момент предполагаю, что все в порядке
         if (guid == null)
         {
+            _logger.LogWarning("При попытке обновления тренировки, не передано значение id");
             Response.StatusCode = 404;
             return null;
         }
+        _logger.LogInformation("Обновление события. DTO: " + dto);
 
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
-        var training = new Training()
-        {
-            Id = guid.Value,
-            UserId = command.UserId,
-            TrainerId = command.TrainerId,
-            Name = command.Name,
-            Description = command.Description,
-            CreationDate = command.CreationDate.ToDateOnly(),
-            EditDate = command.EditDate?.ToDateOnly(),
-            IsCompleted = command.IsCompleted
-        };
+        var training = dto.ToTraining(guid.Value);
 
         //TODO: подумать о реализации проверки успешности обновления тренировки
         _repository.Update(training);
         _repository.Save();
 
-        var returnedTraining = new GetTrainingDTO()
-        {
-            Id = training.Id,
-            UserId = training.UserId,
-            TrainerId = training.TrainerId,
-            Name = training.Name,
-            Description = training.Description,
-            CreationDate = training.CreationDate.ToDateTime(new TimeOnly(0)),
-            EditDate = training.EditDate?.ToDateTime(new TimeOnly(0)),
-            IsCompleted = training.IsCompleted
-        };
-
+        var returnedTraining = GetTrainingDto.FromTraining(training);
+      
         return returnedTraining;
     }
 
