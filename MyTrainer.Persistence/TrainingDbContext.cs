@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
+using MyTrainer.Application.Extensions;
 using MyTrainer.Application.Interfaces;
 using MyTrainer.Application.Structs;
 using MyTrainer.Domain;
@@ -47,7 +48,7 @@ public class TrainingDbContext: ITrainingDbContext
                 DateTime? editDate = reader.IsDBNull(6) ? null : reader.GetDateTime(6);
 
                 training.IsCompleted = reader.GetBoolean(7);
-                training.CreationDate = new DateOnly(creationDate.Year, creationDate.Month, creationDate.Day);
+                training.CreationDate = creationDate.ToDateOnly();
                 training.EditDate = editDate == null ? null : new DateOnly(editDate.Value.Year, editDate.Value.Month, editDate.Value.Day);
                 trainings.Add(training);
 
@@ -162,7 +163,7 @@ public class TrainingDbContext: ITrainingDbContext
     public void SaveContext()
     {
         //TODO: а тут вообще что-то необходимо в случае работы с нативными запросами?
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
 

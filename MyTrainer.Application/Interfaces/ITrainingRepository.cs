@@ -3,7 +3,7 @@ using MyTrainer.Domain;
 using System;
 namespace MyTrainer.Application;
 
-public interface IRepository
+public interface ITrainingRepository
 { 
     void Create(Training training);
     Training? Get(Guid guid);

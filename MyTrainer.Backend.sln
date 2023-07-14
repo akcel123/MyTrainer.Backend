@@ -11,13 +11,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{D6D6A9D6-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF3D66F6-4A93-4C88-8817-0464816CABAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTrainer.Domain", "MyTrainer.Domain\MyTrainer.Domain.csproj", "{793230F8-6686-4832-9D07-BA4684F1DCA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTrainer.Domain", "MyTrainer.Domain\MyTrainer.Domain.csproj", "{793230F8-6686-4832-9D07-BA4684F1DCA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTrainer.Application", "MyTrainer.Application\MyTrainer.Application.csproj", "{0847B13C-36BF-4038-9743-158EADD8C0EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTrainer.Application", "MyTrainer.Application\MyTrainer.Application.csproj", "{0847B13C-36BF-4038-9743-158EADD8C0EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTrainer.Persistence", "MyTrainer.Persistence\MyTrainer.Persistence.csproj", "{617E5975-A970-481D-9856-D12FAF82849E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTrainer.Persistence", "MyTrainer.Persistence\MyTrainer.Persistence.csproj", "{617E5975-A970-481D-9856-D12FAF82849E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTrainer.API", "MyTrainer.API\MyTrainer.API.csproj", "{80E711E5-EED3-4A99-A79F-E92FE3948F60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTrainer.API", "MyTrainer.API\MyTrainer.API.csproj", "{80E711E5-EED3-4A99-A79F-E92FE3948F60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
