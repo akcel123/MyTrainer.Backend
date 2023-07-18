@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyTrainer.API.Models;
 using MyTrainer.Application;
+using MyTrainer.Application.Exceptions;
 using MyTrainer.Application.Extensions;
 using MyTrainer.Domain;
 
@@ -37,13 +38,8 @@ public class TrainingsController : Controller
     [Route("get_training/{guid:guid?}")]
     public GetTrainingDto? GetTraining(Guid? guid)
     {
-        //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
         if (guid == null)
-        {
-            _logger.LogWarning("При попытке получения тренировки, не передано значение id");
-            Response.StatusCode = 404;
-            return null;
-        }
+            throw new GuidIsNullException("При попытке получения тренировки, не передано значение id");
 
         var training = _repository.Get(guid.Value);
 
@@ -68,9 +64,6 @@ public class TrainingsController : Controller
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
         var training = dto.ToTrainig();
 
-        //TODO: подумать о реализации проверки успешности создания тренировки
-        //Метод при создании может вернуть экзепшен, возможно имеет смысл его передавать
-
         _repository.Create(training);
         _repository.Save();
 
@@ -84,13 +77,8 @@ public class TrainingsController : Controller
     [Route("delete_training/{guid:guid?}")]
     public void DeleteTraining(Guid? guid) 
     {
-        //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
         if (guid == null)
-        {
-            _logger.LogWarning("При попытке удаления тренировки, не передано значение id");
-            Response.StatusCode = 404;
-            return;
-        }
+            throw new GuidIsNullException("При попытке удаления тренировки, не передано значение id");
 
         _repository.Delete(guid.Value);
     }
@@ -100,20 +88,14 @@ public class TrainingsController : Controller
     [Route("update_training/{guid:guid?}")]
     public GetTrainingDto? UpdateTraining(UpdateTrainingDTO dto, Guid? guid)
     {
-        //FIXME: ОБЯЗАТЕЛЬНО ИСПРАВИТЬ, НЕОБХОДИМО ВЕРНУТЬ ОШИБКУ. Реализация ниже (предположительно) может быть улучшена
-        //В данный момент предполагаю, что все в порядке
         if (guid == null)
-        {
-            _logger.LogWarning("При попытке обновления тренировки, не передано значение id");
-            Response.StatusCode = 404;
-            return null;
-        }
+            throw new GuidIsNullException("При попытке обновления тренировки, не передано значение id");
+
         _logger.LogInformation("Обновление события. DTO: " + dto);
 
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
         var training = dto.ToTraining(guid.Value);
 
-        //TODO: подумать о реализации проверки успешности обновления тренировки
         _repository.Update(training);
         _repository.Save();
 

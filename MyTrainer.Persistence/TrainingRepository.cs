@@ -5,7 +5,6 @@ using System;
 
 namespace MyTrainer.Persistence;
 
-//TODO: класс репозитория должен бросать exceptions
 public class TrainingRepository: ITrainingRepository
 {
     readonly ITrainingDbContext _dbContext;

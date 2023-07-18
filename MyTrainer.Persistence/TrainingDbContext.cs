@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.IO;
-using System.Xml.Linq;
-using Microsoft.Extensions.Configuration;
 using MyTrainer.Application.Exceptions;
 using MyTrainer.Application.Extensions;
 using MyTrainer.Application.Interfaces;
-using MyTrainer.Application.Structs;
 using MyTrainer.Domain;
 using Npgsql;
 
@@ -58,7 +51,7 @@ public class TrainingDbContext: ITrainingDbContext
         }
         catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка при получении значения: {exception.Message}");
+            throw new DatabaseException(exception.Message);
         }
 
         return trainings;
@@ -91,7 +84,7 @@ public class TrainingDbContext: ITrainingDbContext
         }
         catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка {exception.Message}");
+            throw new DatabaseException(exception.Message);
         }
     }
 
@@ -108,7 +101,6 @@ public class TrainingDbContext: ITrainingDbContext
             command.Parameters.AddWithValue("id", guid);
             int rowsAffected = command.ExecuteNonQuery();
 
-            //TODO: реализовать проверку успешности удаления, возможно нужно отредактировать функцию Delete
             if (rowsAffected <= 0)
             {
                 throw new DatabaseException("Delete query exception");
@@ -154,7 +146,7 @@ public class TrainingDbContext: ITrainingDbContext
         }
         catch (NpgsqlException exception)
         {
-            throw new DatabaseException("Delete query exception");
+            throw new DatabaseException(exception.Message);
         }
 
         return training;
@@ -197,14 +189,13 @@ public class TrainingDbContext: ITrainingDbContext
             int rowsAffected = command.ExecuteNonQuery();
             if (rowsAffected <= 0)
             {
-                //FIXME: исправить на другой класс Exception (наверное собственный)
-                throw new DatabaseException(exception.Message);
+                throw new DatabaseException("Update query exception");
             }
 
         }
         catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка при обновлении события {exception.Message}");
+            throw new DatabaseException(exception.Message);
         }
 
     }

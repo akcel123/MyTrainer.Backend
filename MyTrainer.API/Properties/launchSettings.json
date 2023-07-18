@@ -10,7 +10,6 @@
   "profiles": {
     "MyTrainer.API": {
       "commandName": "Project",
-      "launchBrowser": false,
       "applicationUrl": "http://localhost:5246",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -25,4 +24,4 @@
       }
     }
   }
-  }
+}
