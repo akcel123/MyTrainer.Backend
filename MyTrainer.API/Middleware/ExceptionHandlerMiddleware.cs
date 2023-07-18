@@ -22,11 +22,6 @@ public class ExceptionHandlerMiddleware
         {
             await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Working with database error", LogLevel.Error);
         }
-        catch (GuidIsNullException ex)
-        {
-            await HandleExceptionAsync(context, ex, HttpStatusCode.NotFound, "Where is ID?", LogLevel.Warning);
-        }
-
         catch (Exception ex) 
         {
             await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Internal Server error", LogLevel.Error);

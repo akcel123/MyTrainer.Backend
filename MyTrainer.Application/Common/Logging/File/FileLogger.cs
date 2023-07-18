@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace MyTrainer.Application.Common.Logging.File;
 
@@ -30,15 +31,17 @@ public class FileLogger: ILogger, IDisposable
         var timeNow = DateTime.Now;
         string logMessage;
 
+
         //Если существует экзепшн, добавь его в сообщение
         if (exception != null)
-            logMessage = $"{timeNow:T} - {formatter(state, exception)} - \n Method {exception?.TargetSite?.Name} in {exception?.TargetSite?.DeclaringType?.FullName}";
+            logMessage = $"{logLevel} : {timeNow:G} - {formatter(state, exception)} - \n Method {exception?.TargetSite?.Name} in {exception?.TargetSite?.DeclaringType?.FullName}";
         else
-            logMessage = $"{timeNow:T} - {formatter(state, exception)}";
+            logMessage = $"{logLevel} : {timeNow:G} - {formatter(state, exception)}";
 
 
         lock (_lock)
         {
+
             if (!Directory.Exists(_filePath))
                 Directory.CreateDirectory(_filePath);
 
