@@ -2,8 +2,6 @@
 using MyTrainer.API.Models;
 using MyTrainer.Application;
 using MyTrainer.Application.Exceptions;
-using MyTrainer.Application.Extensions;
-using MyTrainer.Domain;
 
 namespace MyTrainer.API.Controllers;
 
