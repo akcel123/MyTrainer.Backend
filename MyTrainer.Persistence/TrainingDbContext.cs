@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.IO;
 using System.Xml.Linq;
 using Microsoft.Extensions.Configuration;
+using MyTrainer.Application.Exceptions;
 using MyTrainer.Application.Extensions;
 using MyTrainer.Application.Interfaces;
 using MyTrainer.Application.Structs;
@@ -107,15 +109,14 @@ public class TrainingDbContext: ITrainingDbContext
             int rowsAffected = command.ExecuteNonQuery();
 
             //TODO: реализовать проверку успешности удаления, возможно нужно отредактировать функцию Delete
-            if (rowsAffected == 0)
+            if (rowsAffected <= 0)
             {
-                //FIXME: исправить на другой класс Exception (наверное собственный)
-                throw new Exception();
+                throw new DatabaseException("Delete query exception");
             }
         }
         catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка при получении значения: {exception.Message}");
+            throw new DatabaseException(exception.Message);
         }
 
     }
@@ -153,7 +154,7 @@ public class TrainingDbContext: ITrainingDbContext
         }
         catch (NpgsqlException exception)
         {
-            Console.WriteLine($"Возникла ошибка при получении значения: {exception.Message}");
+            throw new DatabaseException("Delete query exception");
         }
 
         return training;
@@ -162,8 +163,8 @@ public class TrainingDbContext: ITrainingDbContext
 
     public void SaveContext()
     {
-        //TODO: а тут вообще что-то необходимо в случае работы с нативными запросами?
-        //throw new NotImplementedException();
+        //Данная функция ничего не делает, так как мы используем нативные запросы ADO.NET
+        //Необходимость данной функции определяется интерфейсом
     }
 
 
@@ -192,12 +193,12 @@ public class TrainingDbContext: ITrainingDbContext
 
             command.Parameters.AddWithValue("id", training.Id);
 
-            //TODO: тут можно реализовать проверку на успешность операции
+
             int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected == 0)
+            if (rowsAffected <= 0)
             {
                 //FIXME: исправить на другой класс Exception (наверное собственный)
-                throw new Exception();
+                throw new DatabaseException(exception.Message);
             }
 
         }

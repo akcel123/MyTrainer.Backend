@@ -69,6 +69,8 @@ public class TrainingsController : Controller
         var training = dto.ToTrainig();
 
         //TODO: подумать о реализации проверки успешности создания тренировки
+        //Метод при создании может вернуть экзепшен, возможно имеет смысл его передавать
+
         _repository.Create(training);
         _repository.Save();
 
