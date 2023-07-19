@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 //��������� ������ � ������� ������� critical � ����
-builder.Logging.AddFile("../logging_file/critical/", LogLevel.Critical);
+builder.Logging.AddFile("../logging_file/critical/", LogLevel.Error);
 
 
 

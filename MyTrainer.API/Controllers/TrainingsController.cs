@@ -2,8 +2,7 @@
 using MyTrainer.API.Models;
 using MyTrainer.Application;
 using MyTrainer.Application.Exceptions;
-using MyTrainer.Application.Extensions;
-using MyTrainer.Domain;
+using System.Text.Json;
 
 namespace MyTrainer.API.Controllers;
 
@@ -35,13 +34,10 @@ public class TrainingsController : Controller
 
 
     [HttpGet]
-    [Route("get_training/{guid:guid?}")]
-    public GetTrainingDto? GetTraining(Guid? guid)
+    [Route("get_training/{guid:guid}")]
+    public GetTrainingDto? GetTraining(Guid guid)
     {
-        if (guid == null)
-            throw new GuidIsNullException("При попытке получения тренировки, не передано значение id");
-
-        var training = _repository.Get(guid.Value);
+        var training = _repository.Get(guid);
 
         if (training == null)
         {
@@ -59,7 +55,7 @@ public class TrainingsController : Controller
     [Route("create_training")]
     public GetTrainingDto CreateTraining(CreateTrainingDto dto)
     {
-        _logger.LogInformation("Создание тренировки. DTO: " + dto);
+        _logger.LogInformation("Создание тренировки. DTO: " + JsonSerializer.Serialize(dto));
 
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
         var training = dto.ToTrainig();
@@ -74,27 +70,21 @@ public class TrainingsController : Controller
 
 
     [HttpDelete]
-    [Route("delete_training/{guid:guid?}")]
-    public void DeleteTraining(Guid? guid) 
+    [Route("delete_training/{guid:guid}")]
+    public void DeleteTraining(Guid guid) 
     {
-        if (guid == null)
-            throw new GuidIsNullException("При попытке удаления тренировки, не передано значение id");
-
-        _repository.Delete(guid.Value);
+        _repository.Delete(guid);
     }
 
 
     [HttpPut]
-    [Route("update_training/{guid:guid?}")]
-    public GetTrainingDto? UpdateTraining(UpdateTrainingDTO dto, Guid? guid)
+    [Route("update_training/{guid:guid}")]
+    public GetTrainingDto? UpdateTraining(UpdateTrainingDTO dto, Guid guid)
     {
-        if (guid == null)
-            throw new GuidIsNullException("При попытке обновления тренировки, не передано значение id");
-
-        _logger.LogInformation("Обновление события. DTO: " + dto);
+        _logger.LogInformation("Обновление события. DTO: " + JsonSerializer.Serialize(dto));
 
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
-        var training = dto.ToTraining(guid.Value);
+        var training = dto.ToTraining(guid);
 
         _repository.Update(training);
         _repository.Save();
