@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyTrainer.API.Models;
 using MyTrainer.Application;
-using MyTrainer.Application.Exceptions;
 using System.Text.Json;
 
 namespace MyTrainer.API.Controllers;
@@ -58,7 +57,7 @@ public class TrainingsController : Controller
         _logger.LogInformation("Создание тренировки. DTO: " + JsonSerializer.Serialize(dto));
 
         //TODO: Здесь необходимо реализовать валидацию ID тренера и юзера (возможно, но в рамках микросервиса это не нужно думаю)
-        var training = dto.ToTrainig();
+        var training = dto.ToTraining();
 
         _repository.Create(training);
         _repository.Save();

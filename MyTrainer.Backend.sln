@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTrainer.Persistence", "My
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyTrainer.API", "MyTrainer.API\MyTrainer.API.csproj", "{80E711E5-EED3-4A99-A79F-E92FE3948F60}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTrainer.UnitTests", "MyTrainer.Tests\MyTrainer.UnitTests\MyTrainer.UnitTests.csproj", "{20422217-B2FF-4541-98E3-6CF89999E8D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{80E711E5-EED3-4A99-A79F-E92FE3948F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80E711E5-EED3-4A99-A79F-E92FE3948F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80E711E5-EED3-4A99-A79F-E92FE3948F60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20422217-B2FF-4541-98E3-6CF89999E8D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20422217-B2FF-4541-98E3-6CF89999E8D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20422217-B2FF-4541-98E3-6CF89999E8D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20422217-B2FF-4541-98E3-6CF89999E8D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +56,7 @@ Global
 		{0847B13C-36BF-4038-9743-158EADD8C0EE} = {D6D6A9D6-0718-4D2B-AE34-FA6FAB954A89}
 		{617E5975-A970-481D-9856-D12FAF82849E} = {3D4E1A45-FE89-4FCD-9AF0-E9CADC322DF2}
 		{80E711E5-EED3-4A99-A79F-E92FE3948F60} = {C35AC394-C64D-4BC1-9319-75FA5ED254E5}
+		{20422217-B2FF-4541-98E3-6CF89999E8D9} = {CF3D66F6-4A93-4C88-8817-0464816CABAD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C8720EC6-01D4-4168-98B0-7FE59DAA07BF}

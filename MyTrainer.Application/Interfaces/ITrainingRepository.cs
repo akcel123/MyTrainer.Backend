@@ -1,6 +1,4 @@
-﻿using MyTrainer.Application.Interfaces;
-using MyTrainer.Domain;
-using System;
+﻿using MyTrainer.Domain;
 namespace MyTrainer.Application;
 
 public interface ITrainingRepository

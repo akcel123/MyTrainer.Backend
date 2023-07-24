@@ -1,5 +1,4 @@
-﻿
-using MyTrainer.Application.Extensions;
+﻿using MyTrainer.Application.Extensions;
 using MyTrainer.Domain;
 
 namespace MyTrainer.API.Models;
@@ -10,9 +9,8 @@ public class CreateTrainingDto
     public Guid UserId { get; set; }           
     public string? Name { get; set; }      
     public string Description { get; set; } 
-    public DateTime CreationDate { get; set; }
 
-    public Training ToTrainig()
+    public Training ToTraining()
         => new()
         {
             Id = Guid.NewGuid(),
@@ -20,7 +18,7 @@ public class CreateTrainingDto
             TrainerId = TrainerId,
             Name = Name,
             Description = Description,
-            CreationDate = CreationDate.ToDateOnly(),
+            CreationDate = DateTime.Now.ToDateOnly(),
             EditDate = null,
             IsCompleted = false
         };
