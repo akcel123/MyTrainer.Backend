@@ -10,4 +10,9 @@
     <ProjectReference Include="..\MyTrainer.Persistence\MyTrainer.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Condition="'$(ExcludeConfigFilesFromBuildOutput)'!='true'" Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

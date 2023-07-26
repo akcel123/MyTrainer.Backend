@@ -1,10 +1,9 @@
-﻿
-using MyTrainer.Application.Extensions;
+﻿using MyTrainer.Application.Extensions;
 using MyTrainer.Domain;
-using System;
 
 namespace MyTrainer.API.Models;
 
+//TODO: Необходимо подумать, как сделать CreationDate нередактированным. Текущая реализация позволяет его отредактировать на стороне клиента
 public class UpdateTrainingDTO
 { 
     public Guid UserId { get; set; }
@@ -12,7 +11,6 @@ public class UpdateTrainingDTO
     public string? Name { get; set; }
     public string Description { get; set; }
     public DateTime CreationDate { get; set; }
-    public DateTime? EditDate { get; set; }
     public bool IsCompleted { get; set; }
 
     public Training ToTraining(Guid guid)
@@ -24,8 +22,7 @@ public class UpdateTrainingDTO
             Name = Name,
             Description = Description,
             CreationDate = CreationDate.ToDateOnly(),
-            EditDate = EditDate?.ToDateOnly(),
+            EditDate = DateTime.Now.ToDateOnly(),
             IsCompleted = IsCompleted
         };
-
 }

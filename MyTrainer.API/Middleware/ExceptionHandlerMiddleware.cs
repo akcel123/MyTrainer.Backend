@@ -22,6 +22,10 @@ public class ExceptionHandlerMiddleware
         {
             await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Working with database error", LogLevel.Error);
         }
+        catch (EntityNotFoundException ex)
+        {
+            await HandleExceptionAsync(context, ex, HttpStatusCode.NoContent, "Content Not Found", LogLevel.Warning);
+        }
         catch (Exception ex) 
         {
             await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Internal Server error", LogLevel.Error);

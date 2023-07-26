@@ -103,7 +103,7 @@ public class TrainingDbContext: ITrainingDbContext
 
             if (rowsAffected <= 0)
             {
-                throw new DatabaseException("Delete query exception");
+                throw new EntityNotFoundException();
             }
         }
         catch (NpgsqlException exception)
@@ -189,7 +189,7 @@ public class TrainingDbContext: ITrainingDbContext
             int rowsAffected = command.ExecuteNonQuery();
             if (rowsAffected <= 0)
             {
-                throw new DatabaseException("Update query exception");
+                throw new EntityNotFoundException();
             }
 
         }
