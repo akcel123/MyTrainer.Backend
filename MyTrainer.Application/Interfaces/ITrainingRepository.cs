@@ -1,6 +1,4 @@
-﻿using MyTrainer.Application.Interfaces;
-using MyTrainer.Domain;
-using System;
+﻿using MyTrainer.Domain;
 namespace MyTrainer.Application;
 
 public interface ITrainingRepository
@@ -10,5 +8,4 @@ public interface ITrainingRepository
     IEnumerable<Training> GetAllTrainings();
     void Update(Training training);
     void Delete(Guid guid);
-    void Save();
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using MyTrainer.Domain;
+﻿using MyTrainer.Domain;
 
 namespace MyTrainer.Application.Interfaces;
 

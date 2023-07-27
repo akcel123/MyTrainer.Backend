@@ -2,26 +2,24 @@
 using MyTrainer.Application.Interfaces;
 using MyTrainer.Domain;
 
-namespace MyTrainer.Persistence;
+namespace MyTrainer.UnitTests.Infrastructure;
 
-public class TrainingRepository: ITrainingRepository
+public class MockRepository: ITrainingRepository
 {
     readonly ITrainingDbContext _dbContext;
-		public TrainingRepository(ITrainingDbContext dbContext)
-		    => _dbContext = dbContext;
+
+    public MockRepository(ITrainingDbContext dbContext)
+        => _dbContext = dbContext;
 
     public void Create(Training training)
     {
         _dbContext.Create(training);
-        _dbContext.SaveContext();
     }
 
     public void Delete(Guid guid)
     {
         _dbContext.Delete(guid);
-        _dbContext.SaveContext();
     }
-
 
     public Training? Get(Guid guid)
     {
@@ -32,13 +30,15 @@ public class TrainingRepository: ITrainingRepository
     {
         return _dbContext.GetAllTrainings();
     }
-    public void Update(Training training)
+
+    public void Save()
     {
-        _dbContext.Update(training);
         _dbContext.SaveContext();
     }
 
-
-
+    public void Update(Training training)
+    {
+        _dbContext.Update(training);
+    }
 }
 

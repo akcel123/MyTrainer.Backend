@@ -20,23 +20,23 @@ public class ExceptionHandlerMiddleware
         }
         catch (DatabaseException ex)
         {
-            await HandleExceptionAsync(context, ex.Message, HttpStatusCode.InternalServerError, "Working with database error", LogLevel.Error);
+            await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Working with database error", LogLevel.Error);
         }
-        catch (GuidIsNullException ex)
+        catch (EntityNotFoundException ex)
         {
-            await HandleExceptionAsync(context, ex.Message, HttpStatusCode.NotFound, "Where is ID?", LogLevel.Warning);
+            await HandleExceptionAsync(context, ex, HttpStatusCode.NoContent, "Content Not Found", LogLevel.Warning);
         }
-
         catch (Exception ex) 
         {
-            await HandleExceptionAsync(context, ex.Message, HttpStatusCode.InternalServerError, "Internal Server error", LogLevel.Error);
+            await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Internal Server error", LogLevel.Error);
         }
     }
 
 
-    async Task HandleExceptionAsync(HttpContext context, string exceptionMessage, HttpStatusCode statusCode, string message, LogLevel logLevel)
+    async Task HandleExceptionAsync(HttpContext context, Exception exception, HttpStatusCode statusCode, string message, LogLevel logLevel)
     {
-        _logger.Log(logLevel, exceptionMessage);
+        
+        _logger.Log(logLevel, exception: exception, exception.Message);
 
         var response = context.Response;
         response.StatusCode = (int)statusCode;
