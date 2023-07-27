@@ -60,7 +60,6 @@ public class TrainingsController : Controller
         var training = dto.ToTraining();
 
         _repository.Create(training);
-        _repository.Save();
 
         var returnedTraining = GetTrainingDto.FromTraining(training);
 
@@ -86,7 +85,6 @@ public class TrainingsController : Controller
         var training = dto.ToTraining(guid);
 
         _repository.Update(training);
-        _repository.Save();
 
         var returnedTraining = GetTrainingDto.FromTraining(training);
       

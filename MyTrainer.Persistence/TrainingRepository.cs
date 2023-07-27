@@ -13,11 +13,13 @@ public class TrainingRepository: ITrainingRepository
     public void Create(Training training)
     {
         _dbContext.Create(training);
+        _dbContext.SaveContext();
     }
 
     public void Delete(Guid guid)
     {
         _dbContext.Delete(guid);
+        _dbContext.SaveContext();
     }
 
 
@@ -33,12 +35,9 @@ public class TrainingRepository: ITrainingRepository
     public void Update(Training training)
     {
         _dbContext.Update(training);
-    }
-
-    public void Save()
-    {
         _dbContext.SaveContext();
     }
+
 
 
 }
